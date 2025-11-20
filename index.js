@@ -132,7 +132,7 @@ app.get("/getAllLeads", async (req, res) => {
 app.get(`/getLeadData/:lead_id`, async (req, res) => {
   try {
     const { lead_id } = req.params;
-    const lead_data = await Lead.findById(lead_id);
+    const lead_data = await Lead.findById(lead_id).populate("salesAgent");
     if (lead_data) {
       res.status(200).json({ data: lead_data });
     } else {
@@ -146,18 +146,18 @@ app.get(`/getLeadData/:lead_id`, async (req, res) => {
   }
 });
 //--api for update lead by id
-app.get(`/updateLeadData/:lead_id`, async (req, res) => {
+app.post(`/updateLeadData/:lead_id`, async (req, res) => {
   try {
     const { lead_id } = req.params;
-    const lead_data = await Lead.findByIdAndUpdate(lead_id, req.body, {
+    const updates_lead_data = await Lead.findByIdAndUpdate(lead_id, req.body, {
       new: true,
     });
-    if (lead_data) {
+    if (updates_lead_data) {
       res
         .status(200)
-        .json({ data: lead_data, message: "update data successfully" });
+        .json({ data: updates_lead_data, message: "update data successfully" });
     } else {
-      res.status(400).json({ message: `data is not updateed` });
+      res.status(404).json({ message: `data is not found` });
     }
   } catch (error) {
     res.status(500).json({
