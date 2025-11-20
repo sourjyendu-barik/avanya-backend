@@ -123,6 +123,46 @@ app.get("/getAllLeads", async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Error while fetching all lead data",
+      error: error.message,
+    });
+  }
+});
+
+//3--api to get lead data by id
+app.get(`/getLeadData/:lead_id`, async (req, res) => {
+  try {
+    const { lead_id } = req.params;
+    const lead_data = await Lead.findById(lead_id);
+    if (lead_data) {
+      res.status(200).json({ data: lead_data });
+    } else {
+      res.status(404).json({ message: `data is not found` });
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: `Error while fetching lead data`,
+      error: error.message,
+    });
+  }
+});
+//--api for update lead by id
+app.get(`/updateLeadData/:lead_id`, async (req, res) => {
+  try {
+    const { lead_id } = req.params;
+    const lead_data = await Lead.findByIdAndUpdate(lead_id, req.body, {
+      new: true,
+    });
+    if (lead_data) {
+      res
+        .status(200)
+        .json({ data: lead_data, message: "update data successfully" });
+    } else {
+      res.status(400).json({ message: `data is not updateed` });
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: `Error while updating lead data`,
+      error: error.message,
     });
   }
 });
