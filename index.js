@@ -101,7 +101,7 @@ app.post("/addNewLead", async (req, res) => {
 //2- api to get all lead data
 const findAllLeads = async (filterObj, sorting) => {
   try {
-    const allLeads = (await Lead.find(filterObj)).sort(sorting);
+    const allLeads = await Lead.find(filterObj).sort(sorting);
     return allLeads;
   } catch (error) {
     throw error;
