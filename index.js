@@ -99,9 +99,9 @@ app.post("/addNewLead", async (req, res) => {
   }
 });
 //2- api to get all lead data
-const findAllLeads = async () => {
+const findAllLeads = async (filterObj, sorting) => {
   try {
-    const allLeads = await Lead.find();
+    const allLeads = (await Lead.find(filterObj)).sort(sorting);
     return allLeads;
   } catch (error) {
     throw error;
@@ -109,7 +109,22 @@ const findAllLeads = async () => {
 };
 app.get("/getAllLeads", async (req, res) => {
   try {
-    const allLeads = await findAllLeads();
+    const { salesAgent, status, tags, source, sortByAsc } = req.query;
+    const filterObj = {};
+    if (salesAgent) {
+      filterObj.salesAgent = mongoose.Types.ObjectId(salesAgent);
+    }
+
+    if (status) filterObj.status = status;
+    if (source) filterObj.source = source;
+
+    if (tags) {
+      const tagsArray = tags.split(",");
+      filterObj.tags = { $in: tagsArray };
+    }
+
+    const sortOrder = sortByAsc === "false" ? -1 : 1;
+    const allLeads = await findAllLeads(filterObj, { createdAt: sortOrder });
     if (allLeads.length > 0) {
       res.status(200).json({
         data: allLeads,
