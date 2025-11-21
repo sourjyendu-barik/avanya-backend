@@ -112,7 +112,7 @@ app.get("/getAllLeads", async (req, res) => {
     const { salesAgent, status, tags, source, sortByAsc } = req.query;
     const filterObj = {};
     if (salesAgent) {
-      filterObj.salesAgent = mongoose.Types.ObjectId(salesAgent);
+      filterObj.salesAgent = new mongoose.Types.ObjectId(salesAgent);
     }
 
     if (status) filterObj.status = status;
