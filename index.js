@@ -230,6 +230,95 @@ app.get("/tags", async (req, res) => {
   }
 });
 
+const sevenDaysAgoDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+const getReportOfLastWeek = async () => {
+  try {
+    const report = await Lead.find({
+      status: "Closed",
+      updatedAt: { $gte: sevenDaysAgoDate },
+    }).select("name updatedAt salesAgent");
+    return report;
+  } catch (error) {
+    throw error;
+  }
+};
+app.get("/report/last-week", async (req, res) => {
+  try {
+    const report = await getReportOfLastWeek();
+    if (report.length > 0) {
+      res.status(200).json({ data: report });
+    } else {
+      res
+        .status(200)
+        .json({ data: [], message: "Currently there are no daya" });
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: "error occurred while fetching reports.",
+      error: error.message,
+    });
+  }
+});
+
+const getReportPipeline = async (req, res) => {
+  try {
+    const report = await Lead.find({ status: { $ne: "Closed" } }).select(
+      "name status updatedAt salesAgent"
+    );
+    return report;
+  } catch (error) {
+    throw error;
+  }
+};
+
+app.get("/report/pipeline", async (req, res) => {
+  try {
+    const report = await getReportPipeline();
+    if (report.length > 0) {
+      res.status(200).json({ data: report });
+    } else {
+      res
+        .status(200)
+        .json({ data: [], message: "Currently no data in pipeline" });
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: "error occurred while fetching reports.",
+      error: error.message,
+    });
+  }
+});
+
+const reportClosedByAgent = async (agentId) => {
+  try {
+    const report = await Lead.find({
+      salesAgent: agentId,
+      status: "Closed",
+    }).select("name updatedAt salesAgent");
+    return report;
+  } catch (error) {
+    throw error;
+  }
+};
+
+app.get("/report/closed-by-agent/:id", async (req, res) => {
+  try {
+    const report = await reportClosedByAgent(req.params.id);
+    if (report.length > 0) {
+      res.status(200).json({ data: report });
+    } else {
+      res
+        .status(200)
+        .json({ data: [], message: "The sales agent have no closed leads" });
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: "error occurred while fetching reports.",
+      error: error.message,
+    });
+  }
+});
+
 const PORT = 3000;
 
 const startserver = async () => {
