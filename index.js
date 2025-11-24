@@ -236,7 +236,9 @@ const getReportOfLastWeek = async () => {
     const report = await Lead.find({
       status: "Closed",
       updatedAt: { $gte: sevenDaysAgoDate },
-    }).select("name updatedAt salesAgent");
+    })
+      .select("name updatedAt salesAgent")
+      .populate("salesAgent");
     return report;
   } catch (error) {
     throw error;
@@ -274,12 +276,11 @@ const getReportPipeline = async (req, res) => {
 app.get("/report/pipeline", async (req, res) => {
   try {
     const report = await getReportPipeline();
-    if (report.length > 0) {
-      res.status(200).json({ data: report });
+    const reportNumber = report.length;
+    if (reportNumber > 0) {
+      res.status(200).json({ totalLeadsInpieline: reportNumber });
     } else {
-      res
-        .status(200)
-        .json({ data: [], message: "Currently no data in pipeline" });
+      res.status(200).json({ totalLeadsInpieline: 0 });
     }
   } catch (error) {
     res.status(500).json({
@@ -294,7 +295,9 @@ const reportClosedByAgent = async (agentId) => {
     const report = await Lead.find({
       salesAgent: agentId,
       status: "Closed",
-    }).select("name updatedAt salesAgent");
+    })
+      .select("name updatedAt salesAgent")
+      .populate("salesAgent");
     return report;
   } catch (error) {
     throw error;
