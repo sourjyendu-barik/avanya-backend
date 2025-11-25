@@ -109,7 +109,7 @@ const findAllLeads = async (filterObj, sorting) => {
 };
 app.get("/getAllLeads", async (req, res) => {
   try {
-    const { salesAgent, status, tags, source, sortByAsc } = req.query;
+    const { salesAgent, status, tags, source, sortByAsc, priority } = req.query;
     const filterObj = {};
     if (salesAgent) {
       filterObj.salesAgent = new mongoose.Types.ObjectId(salesAgent);
@@ -117,6 +117,7 @@ app.get("/getAllLeads", async (req, res) => {
 
     if (status) filterObj.status = status;
     if (source) filterObj.source = source;
+    if (priority) filterObj.priority = priority;
 
     if (tags) {
       const tagsArray = tags.split(",");
@@ -262,7 +263,7 @@ app.get("/report/last-week", async (req, res) => {
   }
 });
 
-const getReportPipeline = async (req, res) => {
+const getReportPipeline = async () => {
   try {
     const report = await Lead.countDocuments({ status: { $ne: "Closed" } });
     return report;
