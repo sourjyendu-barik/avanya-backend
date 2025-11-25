@@ -265,6 +265,7 @@ app.get("/report/last-week", async (req, res) => {
 const getReportPipeline = async (req, res) => {
   try {
     const report = await Lead.countDocuments({ status: { $ne: "Closed" } });
+    return report;
     // return report.length;
   } catch (error) {
     throw error;
