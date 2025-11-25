@@ -229,7 +229,7 @@ app.get("/tags", async (req, res) => {
     });
   }
 });
-
+//apis for report
 const sevenDaysAgoDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 const getReportOfLastWeek = async () => {
   try {
@@ -264,10 +264,8 @@ app.get("/report/last-week", async (req, res) => {
 
 const getReportPipeline = async (req, res) => {
   try {
-    const report = await Lead.find({ status: { $ne: "Closed" } }).select(
-      "name status updatedAt salesAgent"
-    );
-    return report;
+    const report = await Lead.countDocuments({ status: { $ne: "Closed" } });
+    // return report.length;
   } catch (error) {
     throw error;
   }
@@ -276,9 +274,8 @@ const getReportPipeline = async (req, res) => {
 app.get("/report/pipeline", async (req, res) => {
   try {
     const report = await getReportPipeline();
-    const reportNumber = report.length;
-    if (reportNumber > 0) {
-      res.status(200).json({ totalLeadsInpieline: reportNumber });
+    if (report > 0) {
+      res.status(200).json({ totalLeadsInpieline: report });
     } else {
       res.status(200).json({ totalLeadsInpieline: 0 });
     }
