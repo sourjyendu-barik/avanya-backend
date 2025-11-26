@@ -183,9 +183,13 @@ app.post(`/updateLeadData/:lead_id`, async (req, res) => {
   }
 });
 //apis for comments
-app.get("/comments", async (req, res) => {
+app.get("/leads/:id/comments", async (req, res) => {
   try {
-    const comment_list = await Comment.find();
+    const comment_list = await Comment.find({ lead: req.params.id }).populate({
+      path: "author",
+      select: "name",
+    });
+
     if (comment_list.length > 0) {
       res.status(200).json({ data: comment_list });
     } else {
@@ -205,7 +209,7 @@ app.post("/addComments", async (req, res) => {
     if (savedComments) {
       res.status(201).json({ message: "Comment saved successfully" });
     } else {
-      res.status(400).json({ message: "Missing firld in comment" });
+      res.status(400).json({ message: "Missing feild in comment" });
     }
   } catch (error) {
     res.status(500).json({
