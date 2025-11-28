@@ -204,6 +204,7 @@ app.delete("/deleteLead/:lead_id", async (req, res) => {
   try {
     const { lead_id } = req.params;
     const deleted_data = await Lead.findByIdAndDelete(lead_id);
+    await Comment.deleteMany({ lead: new mongoose.Types.ObjectId(lead_id) });
     if (deleted_data) {
       res.status(200).json({ message: "deleted data successfully" });
     } else {
