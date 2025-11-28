@@ -70,6 +70,23 @@ app.get("/getAllSalesAgents", async (req, res) => {
     });
   }
 });
+//api for delete sales agent by id
+app.delete("/deletesalesAgent/:salesAgent_id", async (req, res) => {
+  try {
+    const { salesAgent_id } = req.params;
+    const deleted_data = await SalesAgent.findByIdAndDelete(salesAgent_id);
+    if (deleted_data) {
+      res.status(200).json({ message: "deleted data successfully" });
+    } else {
+      res.status(404).json({ message: `data is not found` });
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: `Error while deleting data lead data`,
+      error: error.message,
+    });
+  }
+});
 //apis for Lead
 //1-add lead
 const addNewLead = async (newLead_data) => {
@@ -178,6 +195,23 @@ app.post(`/updateLeadData/:lead_id`, async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: `Error while updating lead data`,
+      error: error.message,
+    });
+  }
+});
+//api for delete lead by id
+app.delete("/deleteLead/:lead_id", async (req, res) => {
+  try {
+    const { lead_id } = req.params;
+    const deleted_data = await Lead.findByIdAndDelete(lead_id);
+    if (deleted_data) {
+      res.status(200).json({ message: "deleted data successfully" });
+    } else {
+      res.status(404).json({ message: `data is not found` });
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: `Error while deleting lead data`,
       error: error.message,
     });
   }
