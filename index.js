@@ -141,7 +141,7 @@ app.get("/getAllLeads", async (req, res) => {
       filterObj.tags = { $in: tagsArray };
     }
 
-    const sortOrder = sortByAsc === "false" ? -1 : 1;
+    const sortOrder = sortByAsc === "true" ? 1 : -1;
     const allLeads = await findAllLeads(filterObj, { timeToClose: sortOrder });
     if (allLeads.length > 0) {
       res.status(200).json({
