@@ -5,16 +5,44 @@ const Lead = require("./models/model.Lead");
 const SalesAgent = require("./models/model.SalesAgent");
 const Tag = require("./models/model.tag");
 const mongoose = require("mongoose");
+const cookieParser = require("cookie-parser");
+
 //express importing
 const express = require("express");
 const app = express();
+app.use(cookieParser());
 app.use(express.json());
 
-//cors code with origin "*".So it can be accesible by anyone
 const cors = require("cors");
 
-app.use(cors({ origin: "*", credentials: true }));
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://avanya-frontend.vercel.app",
+].filter(Boolean);
 
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type"],
+  }),
+);
+
+//public routes
+app.use("/auth", require("./routers/authRoutes"));
+
+//auth middilewire
+const auth = require("./middilewire/auth");
+app.use(auth);
+//protected routes
+app.use("/auth", require("./routers/userRoutes"));
 //apis for sales agent
 //1--add new sales agent
 const addNewSalesAgent = async (salesAgent_data) => {
